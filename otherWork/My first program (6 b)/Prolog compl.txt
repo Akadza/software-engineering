@@ -1,0 +1,45 @@
+/*
+1) всего есть 4 марки- "фауна", "флора", "спорт",  "космос".-
+2) волк собирает марку - "фауна".-
+3) Нуф-нуф НЕ собирает марку - "спорт".
+4) волк находится слева от наф-нафа".
+5) ниф-ниф справа от того, кто собирает марки - "космос".
+6) нуф-нуф сидит напротив наф-нафа".
+
+% немного не успел выполнить до 30 числа 00:00 но я опоздал
+% всего на 44 минуты. надеюсь вы простите
+% код написан в https://rextester.com/l/prolog_online_compiler.
+*/
+
+
+
+% базовые условия которые мы можем задать напрямую
+collect("Wolf", "Fauna"). % № 2 условие.
+position("Wolf", "Naf-Naf", "left"). % № 4 условие.
+position("Nuf-Nuf", "Naf-Naf", "opposite"). % № 6 условие.
+
+% так как Наф-Наф сидит напротив Нуф, и Волк слева от Наф. (условие № 4,6)
+% ---> что справа от Нуф только волк, но не как НЕ Ниф. тогда Ниф справа от Наф.
+% ---> тогда и из этого же условия -> Ниф собирает марку - "космос" (условие № 5)
+
+position(WhoIs, Who, "right") :- position(WhoIs, "Naf-Naf", "left"), position(Who, "Naf-Naf", "opposite"). 
+% осталась последняя позиция
+position("Nif-Nif", WhoIs, Where) :- position("Wolf", WhoIs, "left"), position("Wolf", "Nuf-Nuf", Where).
+% распределим марки: условие № 5
+collect(Who, "Space") :- position("Nif-Nif", Who, "right").
+
+% 1 условие
+mark("Flora").
+mark("Sport").
+mark("Fauna").
+mark("Space").
+
+
+% условие № 3
+% здесь мы исключаем все те моменты, 1) что марка не спорт у нуфа и 2) другие имеют марки, поэтому их не используем.
+collect("Nuf-Nuf", What) :- mark(What), What \= "Sport", \+ collect("Wolf", What), \+ collect("Naf-Naf", What).
+collect("Nif-Nif", What) :- mark(What), \+ collect("Nuf-Nuf", What), \+ collect("Wolf", What), \+ collect("Naf-Naf", What).
+
+% вывод коллекционеров и их позиции на столе. ^-^
+?- collect(Who, What), write(Who), write(" collects "), writeln(What), fail.
+?- position(Who1, Who2, Where), write(Who1), write(" sitting "), write(Where), write(" from "), writeln(Who2), fail.
